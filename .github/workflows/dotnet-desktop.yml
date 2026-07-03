@@ -22,11 +22,14 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    # 2. 现场动态创建一个临时的项目壳子，并把你的代码塞进去编译
+    # 2. 现场动态创建项目、安装缺少的依赖包并编译
     - name: Dynamically Create Project and Build
       run: |
-        # 创建一个标准的控制台项目模板
+        # 创建标准的控制台项目模板
         dotnet new console -n TempApp --force
+        
+        # 👈 核心修复：为新项目安装 System.Management 依赖包
+        dotnet add TempApp package System.Management
         
         # 把你的 activate.cs 覆盖到新项目的 Program.cs 里面去
         Copy-Item -Path "activate.cs" -Destination "TempApp/Program.cs" -Force
