@@ -729,9 +729,10 @@ class KmsActivator
             }
 
             // Check activation status
-            string statusText = "Unknown";
-            string activationType = "Unknown";
+            string statusText = "未知";
+            string activationType = "未知";
             int graceDays = 0;
+            int winLicenseStatus = -1;
             using (var searcher = new ManagementObjectSearcher(
                 "SELECT LicenseStatus, GracePeriodRemaining, ProductKeyChannel, " +
                 "VLActivationType, KeyManagementServiceMachine, Description, ProductKeyID2 " +
@@ -741,6 +742,7 @@ class KmsActivator
                 foreach (var o in searcher.Get())
                 {
                     int ls = SafeInt(o["LicenseStatus"]);
+                    winLicenseStatus = ls;
                     object g = o["GracePeriodRemaining"];
                     graceDays = (g == null || g is DBNull) ? 0 : SafeInt(g) / 1440;
                     switch (ls)
@@ -822,7 +824,7 @@ class KmsActivator
             Console.WriteLine("  密钥:  " + key);
             Console.WriteLine("========================================");
 
-            bool winActivated = (statusText == "Activated");
+            bool winActivated = (winLicenseStatus == 1);
 
             // Office section (display only)
             List<DetectedOffice> officeList = ProcessOffice();
@@ -867,6 +869,13 @@ class KmsActivator
 
                     else if (mc == "1")
                     {
+                        if (winActivated)
+                        {
+                            Console.WriteLine("Windows 已激活，无需重复操作。");
+                            Console.WriteLine("\n按任意键继续...");
+                            Console.ReadKey();
+                            continue;
+                        }
                         Console.WriteLine("正在安装 GVLK 产品密钥...");
                         Console.WriteLine(Run("cscript", string.Format("//nologo {0} /ipk {1}", slmgr, key)));
                         Console.WriteLine("正在设置 KMS 服务器: sohai.space");
@@ -879,6 +888,13 @@ class KmsActivator
                     }
                     else if (mc == "2")
                     {
+                        if (winActivated)
+                        {
+                            Console.WriteLine("Windows 已激活，无需重复安装密钥。");
+                            Console.WriteLine("\n按任意键继续...");
+                            Console.ReadKey();
+                            continue;
+                        }
                         Console.WriteLine("正在安装 GVLK 产品密钥...");
                         Console.WriteLine(Run("cscript", string.Format("//nologo {0} /ipk {1}", slmgr, key)));
                         Console.WriteLine("  完成，请使用选项 1 激活，或手动运行 slmgr /ato。");
