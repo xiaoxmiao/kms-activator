@@ -58,8 +58,8 @@ class KmsActivator
         new Entry("单语言||Single Language", "7HNRX-D7KGG-3K4RQ-4WPJ4-YTDFH"),
         new Entry("特定国家||Country Specific", "PVMJN-6DFY6-9CCP6-7BKTT-D3WVR"),
         new Entry("家庭版||Home", "TX9XD-98N7V-6WMQ6-BX7FG-H8Q99"),
-        new Entry("LTSC 2024 N||LTSC 2021 N||LTSC 2019 N", "92NFX-8DJQP-P6BBQ-THF9C-7CG2H"),
-        new Entry("LTSC 2024||LTSC 2021||LTSC 2019||2019 LTSC", "M7XTQ-FN8P6-TTKYV-9D4CC-J462D"),
+        new Entry("LTSC 2024 N||LTSC 2021 N||LTSC 2019 N||LTSC N", "92NFX-8DJQP-P6BBQ-THF9C-7CG2H"),
+        new Entry("LTSC 2024||LTSC 2021||LTSC 2019||2019 LTSC||LTSC", "M7XTQ-FN8P6-TTKYV-9D4CC-J462D"),
         new Entry("LTSB 2016 N||LTSB 2016", "QFFDN-GRT3P-VKWWX-X7T3R-8B639"),
         new Entry("LTSB 2016", "DCPHK-NFMTC-H88MJ-PFHPY-QJ4BJ"),
         new Entry("LTSB 2015 N||LTSB 2015", "2F77B-TNFGY-69QQF-B8YKP-D69TJ"),
@@ -135,6 +135,7 @@ class KmsActivator
     {
         bool captionHasLTSC = caption.IndexOf("LTSC", StringComparison.OrdinalIgnoreCase) >= 0 ||
                                caption.IndexOf("LTSB", StringComparison.OrdinalIgnoreCase) >= 0;
+StartSearch:
         for (int i = 0; i < _table.Length; i++)
         {
             string[] ors = _table[i].Pattern.Split(new string[] { "||" }, StringSplitOptions.None);
@@ -185,7 +186,11 @@ class KmsActivator
             }
         }
         // If caption has LTSC/LTSB but no match was found, try again without the restriction
-        // (this handles cases like unrecognized LTSC editions that share keys with regular editions)
+        if (captionHasLTSC)
+        {
+            captionHasLTSC = false;
+            goto StartSearch;
+        }
         return null;
     }
 
