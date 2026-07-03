@@ -22,15 +22,22 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    # 2. 绕过项目系统，直接调用 csc 编译器硬核编译单文件
-    - name: Build Single CS File
+    # 2. 现场动态创建一个临时的项目壳子，并把你的代码塞进去编译
+    - name: Dynamically Create Project and Build
       run: |
-        $cscPath = Get-ChildItem -Path "C:\Program Files\dotnet\sdk" -Filter "csc.dll" -Recurse | Select-Object -First 1 -ExpandProperty FullName
-        dotnet "$cscPath" /out:MyProgram.exe *.cs
+        # 创建一个标准的控制台项目模板
+        dotnet new console -n TempApp --force
+        
+        # 把你的 activate.cs 覆盖到新项目的 Program.cs 里面去
+        Copy-Item -Path "activate.cs" -Destination "TempApp/Program.cs" -Force
+        
+        # 进入临时项目文件夹，执行标准的编译
+        cd TempApp
+        dotnet build --configuration Release
 
     # 3. 把编译出来的可执行文件（.exe）保存到 GitHub
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: Desktop-App
-        path: MyProgram.exe
+        path: TempApp/bin/Release/net8.0/
