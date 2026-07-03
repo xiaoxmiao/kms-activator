@@ -28,7 +28,7 @@ jobs:
         # 创建标准的控制台项目模板
         dotnet new console -n TempApp --force
         
-        # 👈 核心修复：为新项目安装 System.Management 依赖包
+        # 为新项目安装 System.Management 依赖包
         dotnet add TempApp package System.Management
         
         # 把你的 activate.cs 覆盖到新项目的 Program.cs 里面去
@@ -38,9 +38,12 @@ jobs:
         cd TempApp
         dotnet build --configuration Release
 
-    # 3. 把编译出来的可执行文件（.exe）保存到 GitHub
+    # 3. 👈 精准修复：用通配符打包 TempApp 目录下所有编译生成的产物
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: Desktop-App
-        path: TempApp/bin/Release/net8.0/
+        path: |
+          TempApp/bin/Release/**/TempApp.exe
+          TempApp/bin/Release/**/TempApp.dll
+          TempApp/bin/Release/**/*.json
