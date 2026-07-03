@@ -1,43 +1,12 @@
-name: .NET Core Desktop Build
+# 2. 绕过项目系统，直接调用 csc 编译器硬核编译单文件
+    - name: Build Single CS File
+      run: |
+        $cscPath = Get-ChildItem -Path "C:\Program Files\dotnet\sdk" -Filter "csc.dll" -Recurse | Select-Object -First 1 -ExpandProperty FullName
+        dotnet "$cscPath" /out:MyProgram.exe *.cs
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
-jobs:
-  build:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    # 1. 安装 .NET SDK（这里默认 8.0，如果你的项目是 .NET 6 或 9，可以修改下面的数字）
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-
-    # 2. 还原 NuGet 依赖包
-    - name: Restore dependencies
-      run: dotnet restore
-
-    # 3. 编译项目（自动帮你编译 Debug 和 Release 版本）
-    - name: Build Application
-      run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
-
-    # 4. 把编译出来的可执行文件（.exe/生成物）保存到 GitHub，方便你下载
+    # 3. 把编译出来的可执行文件（.exe）保存到 GitHub
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Desktop-App-${{ matrix.configuration }}
-        path: |
-          **/bin/${{ matrix.configuration }}/**
+        name: Desktop-App
+        path: MyProgram.exe
