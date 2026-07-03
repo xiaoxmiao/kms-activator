@@ -874,12 +874,16 @@ class KmsActivator
                         Console.WriteLine("正在激活...");
                         Console.WriteLine(Run("cscript", string.Format("//nologo {0} /ato", slmgr)));
                         Console.WriteLine(Run("cscript", string.Format("//nologo {0} /dli", slmgr)));
+                        Console.WriteLine("\n按任意键继续...");
+                        Console.ReadKey();
                     }
                     else if (mc == "2")
                     {
                         Console.WriteLine("正在安装 GVLK 产品密钥...");
                         Console.WriteLine(Run("cscript", string.Format("//nologo {0} /ipk {1}", slmgr, key)));
                         Console.WriteLine("  完成，请使用选项 1 激活，或手动运行 slmgr /ato。");
+                        Console.WriteLine("\n按任意键继续...");
+                        Console.ReadKey();
                     }
                     else if (mc == "3" && (officeVolumeNeedsWork || officeRetailExists))
                     {
@@ -900,6 +904,8 @@ class KmsActivator
                         {
                             Console.WriteLine("\n  检测到零售版 Office 产品，请使用选项 4 转换。");
                         }
+                        Console.WriteLine("\n按任意键继续...");
+                        Console.ReadKey();
                     }
                     else if (mc == "4" && officeRetailExists)
                     {
@@ -916,6 +922,8 @@ class KmsActivator
                                     ActivateOfficeWithKms(ospp, verLabel, o.ProductName);
                             }
                         }
+                        Console.WriteLine("\n按任意键继续...");
+                        Console.ReadKey();
                     }
                 }
             }
