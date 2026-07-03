@@ -824,7 +824,7 @@ class KmsActivator
             Console.WriteLine("  密钥:  " + key);
             Console.WriteLine("========================================");
 
-            bool winActivated = (winLicenseStatus == 1);
+            bool winActivated = (winLicenseStatus == 1) || statusText.IndexOf("已激活", StringComparison.OrdinalIgnoreCase) >= 0;
 
             // Office section (display only)
             List<DetectedOffice> officeList = ProcessOffice();
@@ -876,6 +876,9 @@ class KmsActivator
                             Console.ReadKey();
                             continue;
                         }
+                        Console.WriteLine("正在卸载旧产品密钥...");
+                        Console.WriteLine(Run("cscript", string.Format("//nologo {0} /cpky", slmgr)));
+                        Console.WriteLine(Run("cscript", string.Format("//nologo {0} /upk", slmgr)));
                         Console.WriteLine("正在安装 GVLK 产品密钥...");
                         Console.WriteLine(Run("cscript", string.Format("//nologo {0} /ipk {1}", slmgr, key)));
                         Console.WriteLine("正在设置 KMS 服务器: sohai.space");
@@ -895,6 +898,9 @@ class KmsActivator
                             Console.ReadKey();
                             continue;
                         }
+                        Console.WriteLine("正在卸载旧产品密钥...");
+                        Console.WriteLine(Run("cscript", string.Format("//nologo {0} /cpky", slmgr)));
+                        Console.WriteLine(Run("cscript", string.Format("//nologo {0} /upk", slmgr)));
                         Console.WriteLine("正在安装 GVLK 产品密钥...");
                         Console.WriteLine(Run("cscript", string.Format("//nologo {0} /ipk {1}", slmgr, key)));
                         Console.WriteLine("  完成，请使用选项 1 激活，或手动运行 slmgr /ato。");
